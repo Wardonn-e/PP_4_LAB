@@ -19,9 +19,13 @@ def delete_none(df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
     return df
 
 
+def count_word(df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
+    df['count_word'] = df['review'].apply(lambda word: len(word.split()))
+    return df
 
 
 if __name__ == '__main__':
     path = r"/Users/wardonne/Desktop/Lab_python/PP_3_Lab/annotation1.csv"
     df = read_csv_in_data_frame(path)
+    df = count_word(df)
     print(df)
