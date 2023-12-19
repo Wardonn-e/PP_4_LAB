@@ -6,6 +6,7 @@ import re
 from pymorphy3 import MorphAnalyzer
 from collections import defaultdict
 import nltk
+
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 
@@ -152,6 +153,7 @@ def graph_build(hist_list: List[tuple[str, int]]) -> None:
     ax.set_ylabel('Количество')
     ax.set_title('Гистограмма самых популярных слов')
     plt.show()
+
 
 if __name__ == '__main__':
     path = r"/Users/wardonne/Desktop/Lab_python/PP_3_Lab/annotation1.csv"
