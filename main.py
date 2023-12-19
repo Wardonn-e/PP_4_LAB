@@ -11,11 +11,19 @@ from nltk.corpus import stopwords
 
 stopwords_ru = set(stopwords.words('russian'))
 patterns = "[«»A-Za-z0-9!#$%&'()*+,./:;<=>?@[\]^_`{|}~—\"\-]+"
-
 morph = MorphAnalyzer()
 
 
 def read_csv_in_data_frame(path: str) -> pd.core.frame.DataFrame:
+    """
+    Чтение данных из CSV-файла и преобразование их в DataFrame.
+
+    Args:
+    - path (str): Путь к CSV-файлу.
+
+    Returns:
+    pd.core.frame.DataFrame: DataFrame с колонками 'review' и 'rating'.
+    """
     df_csv = pd.read_csv(path)
     texts = []
     for absolute_path, rating in zip(df_csv['absolute_path'], df_csv['rating']):
@@ -28,25 +36,72 @@ def read_csv_in_data_frame(path: str) -> pd.core.frame.DataFrame:
 
 
 def delete_none(df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
+    """
+    Удаление строк с отсутствующими значениями.
+
+    Args:
+    - df (pd.core.frame.DataFrame): Исходный DataFrame.
+
+    Returns:
+    pd.core.frame.DataFrame: DataFrame без отсутствующих значений.
+    """
     print(df.isnull().sum())
     df.dropna()
     return df
 
 
 def count_word(df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
+    """
+    Добавление колонки 'count_word' с количеством слов в каждом отзыве.
+
+    Args:
+    - df (pd.core.frame.DataFrame): Исходный DataFrame.
+
+    Returns:
+    pd.core.frame.DataFrame: DataFrame с новой колонкой 'count_word'.
+    """
     df['count_word'] = df['review'].apply(lambda word: len(word.split()))
     return df
 
 
 def filter_by_words(df: pd.core.frame.DataFrame, count_words: int) -> pd.core.frame.DataFrame:
+    """
+    Фильтрация DataFrame по количеству слов в отзыве.
+
+    Args:
+    - df (pd.core.frame.DataFrame): Исходный DataFrame.
+    - count_words (int): Пороговое значение количества слов.
+
+    Returns:
+    pd.core.frame.DataFrame: Отфильтрованный DataFrame.
+    """
     return df[df.count_word >= count_words]
 
 
 def filter_by_rating(df: pd.core.frame.DataFrame, count_rating: int) -> pd.core.frame.DataFrame:
+    """
+    Фильтрация DataFrame по рейтингу.
+
+    Args:
+    - df (pd.core.frame.DataFrame): Исходный DataFrame.
+    - count_rating (int): Значение рейтинга для фильтрации.
+
+    Returns:
+    pd.core.frame.DataFrame: Отфильтрованный DataFrame.
+    """
     return df[df.rating == count_rating]
 
 
 def lemmatize(review: str) -> List[str]:
+    """
+    Лемматизация текста.
+
+    Args:
+    - review (str): Исходный текст.
+
+    Returns:
+    List[str]: Список лемм.
+    """
     review = re.sub(patterns, ' ', review)
     tokens = review.lower().split()
     preprocessed_text = []
@@ -58,6 +113,16 @@ def lemmatize(review: str) -> List[str]:
 
 
 def most_popular_words(df: pd.core.frame.DataFrame, rating: int) -> List[tuple[str, int]]:
+    """
+    Определение самых популярных слов для заданного рейтинга.
+
+    Args:
+    - df (pd.core.frame.DataFrame): Исходный DataFrame.
+    - rating (int): Значение рейтинга.
+
+    Returns:
+    List[tuple[str, int]]: Список кортежей (слово, частота).
+    """
     data = df[df['rating'] == rating]['review'].apply(lemmatize)
     words = Counter()
     for txt in data:
@@ -66,6 +131,15 @@ def most_popular_words(df: pd.core.frame.DataFrame, rating: int) -> List[tuple[s
 
 
 def graph_build(hist_list: List[tuple[str, int]]) -> None:
+    """
+    Построение гистограммы для списка слов.
+
+    Args:
+    - hist_list (List[tuple[str, int]]): Список кортежей (слово, частота).
+
+    Returns:
+    None
+    """
     words = []
     count = []
     for i in range(len(hist_list)):
